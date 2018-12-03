@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>深入理解D3</title>
+    <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="https://cdn.bootcss.com/d3/5.7.0/d3.js"></script>
+</head>
+<style>
+text {
+    font: bold 48px monospace;
+}
+.enter {
+    fill: #00ff00;
+}
+
+.exit {
+    fill: #ff0000;
+}
+
+.exist {
+    fill: grown;
+}
+</style>
+
+<body>
+    <svg width="960" height="600">
+    </svg>
+</body>
+<script>
+var svg = d3.select("svg");
+var alph = "abcdefghijklmnopqrstuvwxyz"
+alph = alph.split("")
+var w = +svg.attr('width');
+var h = +svg.attr('height');
+g = svg.append('g').attr('transform', function() {
+    return 'translate(' + 32 + ',' + h / 2 + ')';
+});
+
+function update(alph) {
+    var t = d3.transition().duration(750);
+    var text = g.selectAll('text').data(alph, function(d) { return d; });
+    text.exit().attr('class', 'exit').transition(t).attr('y', 60).style('fill-opacity', 1e-6).remove();
+    text.attr('class', 'exist').attr('y', 0).style('fill-opacity', 1).transition(t).attr('x', function(d, i) {
+        return i * 32;
+    });
+    text.enter().append('text').attr('class', 'enter').attr('x', function(d, i) {
+        return i * 32;
+    }).attr('y', -60).style('fill-opacity', 1e-6).text(function(d) { return d; }).transition(t).attr('y', 0).style('fill-opacity', 1);
+}
+update(alph);
+d3.interval(function(){
+    update(d3.shuffle(alph).slice(0, Math.floor(Math.random() * 26)).sort());
+}, 1500);
+</script>

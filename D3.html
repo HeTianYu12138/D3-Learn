@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>和D3的第一次邂逅</title>
+    <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="https://cdn.bootcss.com/d3/5.7.0/d3.js"></script>
+</head>
+<style>
+span {
+    border: 1px solid #333;
+    transition: color, background-color .2s;
+    border-radius: 5px;
+    background-color: transparent;
+    color: #333;
+    left: 10%;
+    padding: 10px 20px;
+    position: absolute;
+    top: 20px;
+}
+
+span:hover {
+    color: #fff;
+    background-color: #000;
+    cursor: pointer;
+}
+</style>
+
+<body style="text-align:center;position:relative;padding: 50px">
+    <span>解散</span>
+    <svg width="960" height="600">
+        <g></g>
+    </svg>
+</body>
+<script>
+var mode = true;
+var svg = d3.select('svg');
+var w = svg.attr('width');
+var h = svg.attr('height');
+var charset = 'abcdefghijklmnpoqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+var data = [];
+for (i = 0; i < 200; i++) {
+    data.push(charset[Math.floor(Math.random() * charset.length)])
+}
+svg.select('g')
+    .selectAll('text')
+    .data(data)
+    .enter()
+    .append('text')
+    .text(function(d) {
+        return d;
+    }).attr('transform', function(d, i) {
+        return 'translate(' + (i * w / data.length) + ',' + (h / 2 + (h - 40) * Math.sin(i * 0.1) / 2) + ')';
+    }).attr('font-size', function(d) {
+        return Math.floor(10 + 15 * Math.random())
+    }).attr('fill-opacity', function(d) {
+        return Math.random() * 0.6 + 0.4
+    });
+$('span').click(function(event) {
+    if (mode) {
+        fly(mode);
+        $(this).text('站队');
+        mode = false;
+    } else {
+        fly(mode);
+        $(this).text('解散')
+        mode = true;
+    }
+});
+
+function fly(mode) {
+    var svg = d3.select('svg');
+    var w = svg.attr('width');
+    var h = svg.attr('height');
+    svg.select('g')
+        .selectAll('text')
+        .transition()
+        .delay(function(d, i) {
+            return i * 2
+        })
+        .duration(500)
+        .text(function(d) {
+            return d;
+        })
+        .attr('transform', function(d, i) {
+            if (mode) {
+            	return 'translate(' + Math.random()*svg.attr('width')+ ',' + Math.random()*svg.attr('height') + ')';
+            } else {
+        	return 'translate(' + (i * w / data.length) + ',' + (h / 2 + (h - 40) * Math.sin(i * 0.1) / 2) + ')';
+            }
+        });}
+</script>
+
+</html>
